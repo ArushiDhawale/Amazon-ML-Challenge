@@ -1,0 +1,7 @@
+dataset/
+output/*.tsv
+*.parquet
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
