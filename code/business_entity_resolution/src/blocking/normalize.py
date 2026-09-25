@@ -1,15 +1,11 @@
-import re
+import os
+import sys
 
-SUFFIXES = {
-    "inc", "incorporated", "corp", "corporation", "ltd", "limited",
-    "pvt", "private", "llc", "co", "company"
-}
+# Connect to Person 2 normalization module
+src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
-def normalize_name(s):
-    if not s:
-        return ""
-    s = s.lower()
-    s = re.sub(r"[&]", " and ", s)
-    s = re.sub(r"[^a-z0-9 ]", " ", s)
-    tokens = [t for t in s.split() if t not in SUFFIXES]
-    return " ".join(tokens).strip()
+from normalization import normalize_name, normalize_address, normalize_country, normalize_record
+
+__all__ = ["normalize_name", "normalize_address", "normalize_country", "normalize_record"]
