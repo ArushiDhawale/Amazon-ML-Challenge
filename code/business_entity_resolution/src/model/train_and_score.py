@@ -6,14 +6,23 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, roc_auc_score
 
 def load_ground_truth(gt_path):
-    """Loads ground truth links and sets label 1."""
-    gt_df = pd.read_csv(gt_path, sep="\t")
-    # Ground truth expected columns: source1_entity_id, match_entity_id (or similar)
+    """Loads ground truth links and splits comma-separated target IDs into distinct pairs."""
+    gt_df = pd.read_csv(gt_path, sep="\t", keep_default_na=False)
+    
     cols = gt_df.columns
     s1_col = [c for c in cols if "source1" in c.lower() or "s1" in c.lower()][0]
     cand_col = [c for c in cols if c != s1_col][0]
     
-    gt_pairs = set(zip(gt_df[s1_col].astype(str), gt_df[cand_col].astype(str)))
+    gt_pairs = set()
+    for _, row in gt_df.iterrows():
+        s1 = str(row[s1_col]).strip()
+        matched_str = str(row[cand_col]).strip()
+        if matched_str:
+            for m_id in matched_str.split(","):
+                m_id = m_id.strip()
+                if m_id:
+                    gt_pairs.add((s1, m_id))
+                    
     return gt_pairs, s1_col, cand_col
 
 def main():
